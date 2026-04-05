@@ -1,0 +1,47 @@
+<UserControl x:Class="PosApp.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:PosApp.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringToVis"/>
+    </UserControl.Resources>
+    <Grid Background="#F0F2F5">
+        <materialDesign:Card MaxWidth="450" MaxHeight="550" Margin="16" Padding="40" UniformCornerRadius="32" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+            <StackPanel VerticalAlignment="Center">
+                <materialDesign:PackIcon Kind="Crown" Width="72" Height="72" HorizontalAlignment="Center" Margin="0,0,0,20" Foreground="#FFD700" />
+                <TextBlock Text="ELITE POS LOGIN" FontSize="26" FontWeight="Black" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                <TextBlock Text="Welcome back to Lahore's Premier Retail Suite" FontSize="13" HorizontalAlignment="Center" Margin="0,0,0,40" Opacity="0.6" FontWeight="SemiBold"/>
+                
+                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         materialDesign:HintAssist.Hint="Username / صارف کا نام"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         materialDesign:HintAssist.IsFloating="True"
+                         FontSize="16"
+                         Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,24" />
+                
+                <PasswordBox Name="UserPasswordBox"
+                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                             materialDesign:HintAssist.Hint="Password / پاس ورڈ"
+                             materialDesign:HintAssist.IsFloating="True"
+                             FontSize="16"
+                             Margin="0,0,0,24" />
+                
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#B71C1C" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,24" 
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVis}}" />
+                
+                <Button Content="SECURE LOGIN" Style="{StaticResource MaterialDesignRaisedButton}" 
+                        Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=UserPasswordBox}" 
+                        Height="60" FontSize="18" FontWeight="Black" materialDesign:ButtonAssist.CornerRadius="16"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth2" Background="{DynamicResource PrimaryHueMidBrush}"/>
+                
+                <TextBlock Text="Waqar Photostate © 2026" FontSize="10" Opacity="0.3" HorizontalAlignment="Center" Margin="0,40,0,0"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</UserControl>

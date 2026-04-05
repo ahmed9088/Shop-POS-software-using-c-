@@ -1,0 +1,414 @@
+<UserControl x:Class="PosApp.Views.AdminView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:PosApp.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="768" d:DesignWidth="1024"
+             Background="{DynamicResource MaterialDesignPaper}">
+
+    <UserControl.Resources>
+        <converters:LowStockConverter x:Key="LowStockConverter"/>
+    </UserControl.Resources>
+
+    <!-- Dialog 1: Receive Payment -->
+    <materialDesign:DialogHost IsOpen="{Binding IsReceivePaymentDialogOpen}">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Margin="24" Width="320">
+                <TextBlock Text="Collect Cash" FontSize="20" FontWeight="Black" Margin="0,0,0,8"/>
+                <TextBlock Text="Enter amount received from customer" Margin="0,0,0,24" Opacity="0.6" FontSize="12"/>
+                
+                <TextBox Text="{Binding PaymentAmount}" 
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         materialDesign:HintAssist.Hint="Amount (Rs) / رقم" 
+                         materialDesign:HintAssist.IsFloating="True"
+                         Margin="0,0,0,16"/>
+                
+                <TextBox Text="{Binding PaymentNotes}" 
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         materialDesign:HintAssist.Hint="Optional Notes / نوٹ" 
+                         materialDesign:HintAssist.IsFloating="True"
+                         Margin="0,0,0,24"/>
+                
+                <Button Content="CONFIRM PAYMENT" Command="{Binding ConfirmReceivePaymentCommand}" Height="50" materialDesign:ButtonAssist.CornerRadius="12"/>
+                <Button Content="CANCEL" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,8,0,0"/>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+
+        <!-- Dialog 2: Add Product -->
+        <materialDesign:DialogHost IsOpen="{Binding IsAddProductDialogOpen}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="24" Width="400">
+                    <TextBlock Text="Add New Stock Item" FontSize="20" FontWeight="Black" Margin="0,0,0,24"/>
+                    
+                    <TextBox Text="{Binding NewProduct.Name}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Item Name (English) / نام (انگریزی)" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,16"/>
+                    
+                    <TextBox Text="{Binding NewProduct.UrduName}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Item Name (Urdu) / نام (اردو)" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             FontSize="16" FontWeight="Bold"
+                             Margin="0,0,0,16"/>
+                    
+                    <TextBox Text="{Binding NewProduct.Category}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Category / زمرہ" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,16"/>
+                    
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Text="{Binding NewProduct.CostPrice}" 
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 materialDesign:HintAssist.Hint="Cost (Rs) / قیمت خرید" 
+                                 materialDesign:HintAssist.IsFloating="True"
+                                 Margin="0,0,8,0"/>
+                        <TextBox Grid.Column="1" Text="{Binding NewProduct.Price}" 
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 materialDesign:HintAssist.Hint="Retail (Rs) / ریٹیل" 
+                                 materialDesign:HintAssist.IsFloating="True"
+                                 Margin="8,0,0,0"/>
+                    </Grid>
+                    
+                    <TextBox Text="{Binding NewProduct.WholesalePrice}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Wholesale (Rs) / ہول سیل قیمت" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,16"/>
+
+                    <TextBox Text="{Binding NewProduct.Stock}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Initial Stock / اسٹاک" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,24"/>
+                             
+                    <Button Content="SAVE ITEM TO INVENTORY" Command="{Binding SaveNewProductCommand}" Height="55" materialDesign:ButtonAssist.CornerRadius="16" FontWeight="Bold"/>
+                    <Button Content="CANCEL" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,8,0,0"/>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
+
+            <!-- Dialog 3: Add Expense -->
+            <materialDesign:DialogHost IsOpen="{Binding IsAddExpenseDialogOpen}">
+                <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="24" Width="350">
+                    <TextBlock Text="Log Shop Spending" FontSize="20" FontWeight="Black" Margin="0,0,0,24"/>
+                    
+                    <TextBox Text="{Binding NewExpense.Description}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Expense Detail / خرچہ کی تفصیل" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,16"/>
+                    
+                    <TextBox Text="{Binding NewExpense.Category}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Category / زمرہ" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,16"/>
+                    
+                    <TextBox Text="{Binding NewExpense.Amount}" 
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Amount (Rs) / رقم" 
+                             materialDesign:HintAssist.IsFloating="True"
+                             Margin="0,0,0,24"/>
+                             
+                    <Button Content="SAVE EXPENSE" Command="{Binding SaveNewExpenseCommand}" Height="50" materialDesign:ButtonAssist.CornerRadius="12"/>
+                    <Button Content="CANCEL" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,8,0,0"/>
+                </StackPanel>
+                </materialDesign:DialogHost.DialogContent>
+
+                <!-- Dialog 4: Add User -->
+                <materialDesign:DialogHost IsOpen="{Binding IsAddUserDialogOpen}">
+                    <materialDesign:DialogHost.DialogContent>
+                        <StackPanel Margin="24" Width="320">
+                            <TextBlock Text="Staff Onboarding" FontSize="20" FontWeight="Black" Margin="0,0,0,24"/>
+                            
+                            <TextBox Text="{Binding NewUser.Username}" 
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Username / صارف کا نام" 
+                                     materialDesign:HintAssist.IsFloating="True"
+                                     Margin="0,0,0,16"/>
+                            
+                            <TextBox Text="{Binding NewUserPassword}" 
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Password / پاس ورڈ" 
+                                     materialDesign:HintAssist.IsFloating="True"
+                                     Margin="0,0,0,24"/>
+                                     
+                            <Button Content="CREATE ACCOUNT" Command="{Binding SaveNewUserCommand}" Height="50" materialDesign:ButtonAssist.CornerRadius="12"/>
+                            <Button Content="CANCEL" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </materialDesign:DialogHost.DialogContent>
+
+                    <!-- ============ PREMIUM ADMIN PAGE CONTENT ============ -->
+                    <Grid Background="#F4F7FA">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Premium Header -->
+                        <materialDesign:ColorZone Mode="PrimaryMid" Padding="24,0" Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="ShieldStar" Width="32" Height="32" Foreground="#FFD700" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                    <StackPanel>
+                                        <TextBlock Text="ADMINISTRATOR PANEL — ELITE" FontSize="20" FontWeight="Black"/>
+                                        <TextBlock Text="Waqar Photostate Management Suite" FontSize="11" Opacity="0.8" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Button Command="{Binding LogoutCommand}" Content="SIGN OUT" Style="{StaticResource MaterialDesignOutlinedButton}" Foreground="White" BorderBrush="#55FFFFFF" materialDesign:ButtonAssist.CornerRadius="12"/>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
+
+                        <TabControl Grid.Row="1" TabStripPlacement="Left">
+                            <!-- Dashboard -->
+                            <TabItem Width="150" Height="80">
+                                <TabItem.Header>
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="ViewDashboard" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="OVERVIEW" FontSize="10" FontWeight="Bold" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <ScrollViewer>
+                                    <Grid Margin="32">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <UniformGrid Columns="4" Grid.Row="0" Margin="0,0,0,32">
+                                            <materialDesign:Card Margin="8" Padding="24" Background="#E3F2FD" UniformCornerRadius="24" materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                                                <StackPanel>
+                                                    <materialDesign:PackIcon Kind="Cash100" Foreground="#1976D2" Width="28" Height="28"/>
+                                                    <TextBlock Text="SALES TODAY" Foreground="#1976D2" FontSize="11" FontWeight="Black" Margin="0,16,0,4"/>
+                                                    <TextBlock Text="{Binding CashInToday, StringFormat='Rs {0:N0}'}" FontSize="32" FontWeight="Black" Foreground="#0D47A1"/>
+                                                </StackPanel>
+                                            </materialDesign:Card>
+                                            <materialDesign:Card Margin="8" Padding="24" Background="#E8F5E9" UniformCornerRadius="24" materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                                                <StackPanel>
+                                                    <materialDesign:PackIcon Kind="TrendingUp" Foreground="#2E7D32" Width="28" Height="28"/>
+                                                    <TextBlock Text="PROFIT TODAY" Foreground="#2E7D32" FontSize="11" FontWeight="Black" Margin="0,16,0,4"/>
+                                                    <TextBlock Text="{Binding ProfitToday, StringFormat='Rs {0:N0}'}" FontSize="32" FontWeight="Black" Foreground="#1B5E20"/>
+                                                </StackPanel>
+                                            </materialDesign:Card>
+                                            <materialDesign:Card Margin="8" Padding="24" Background="#FFF3E0" UniformCornerRadius="24" materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                                                <StackPanel>
+                                                    <materialDesign:PackIcon Kind="Warehouse" Foreground="#E65100" Width="28" Height="28"/>
+                                                    <TextBlock Text="STOCK VALUE" Foreground="#E65100" FontSize="11" FontWeight="Black" Margin="0,16,0,4"/>
+                                                    <TextBlock Text="{Binding StockValue, StringFormat='Rs {0:N0}'}" FontSize="32" FontWeight="Black" Foreground="#BF360C"/>
+                                                </StackPanel>
+                                            </materialDesign:Card>
+                                            <materialDesign:Card Margin="8" Padding="24" Background="#FFEBEE" UniformCornerRadius="24" materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                                                <StackPanel>
+                                                    <materialDesign:PackIcon Kind="AlertDecagram" Foreground="#C62828" Width="28" Height="28"/>
+                                                    <TextBlock Text="LOW STOCK" Foreground="#C62828" FontSize="11" FontWeight="Black" Margin="0,16,0,4"/>
+                                                    <TextBlock Text="{Binding LowStockAlerts}" FontSize="32" FontWeight="Black" Foreground="#B71C1C"/>
+                                                </StackPanel>
+                                            </materialDesign:Card>
+                                        </UniformGrid>
+
+                                        <materialDesign:Card Grid.Row="1" Margin="8,0,8,32" Padding="24" Background="White" UniformCornerRadius="32" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Monthly Revenue" FontSize="13" FontWeight="Bold" Opacity="0.5"/>
+                                                    <TextBlock Text="{Binding CashInLast30Days, StringFormat='Rs {0:N0}'}" FontSize="28" FontWeight="Black" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                                </StackPanel>
+                                                
+                                                <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="32,0"/>
+                                                
+                                                <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                                    <TextBlock Text="Shop Net Profit" FontSize="13" FontWeight="Bold" Opacity="0.5" TextAlignment="Right"/>
+                                                    <TextBlock Text="{Binding NetProfit, StringFormat='Rs {0:N0}'}" FontSize="28" FontWeight="Black" Foreground="#2E7D32" TextAlignment="Right"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </materialDesign:Card>
+
+                                        <TextBlock Grid.Row="2" Text="Top Performing Items" FontSize="22" FontWeight="Black" Margin="12,0,0,16"/>
+                                        <materialDesign:Card Grid.Row="3" Margin="8" Padding="12" UniformCornerRadius="24" Background="White">
+                                            <ItemsControl ItemsSource="{Binding TopProductsList}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border BorderBrush="#F0F2F5" BorderThickness="0,0,0,1" Padding="16,20">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <materialDesign:PackIcon Kind="StarCircle" Foreground="#FFD700" Width="24" Height="24" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                                                <StackPanel Grid.Column="1">
+                                                                    <TextBlock Text="{Binding ProductName}" FontSize="18" FontWeight="Bold" Foreground="#1A237E"/>
+                                                                    <TextBlock Text="{Binding TotalQuantitySold, StringFormat='{}{0} units sold in Lahore market'}" FontSize="12" Opacity="0.5"/>
+                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="2" Text="{Binding TotalRevenue, StringFormat='Rs {0:N0}'}" VerticalAlignment="Center" FontSize="22" FontWeight="Black" Foreground="{DynamicResource SecondaryHueMidBrush}"/>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </materialDesign:Card>
+                                    </Grid>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            <!-- Stock List -->
+                            <TabItem Width="150" Height="80">
+                                <TabItem.Header>
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="PackageVariant" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="INVENTORY" FontSize="10" FontWeight="Bold" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <Grid Margin="32">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                                        <Button Content="+ ADD NEW STOCK" Command="{Binding OpenAddProductDialogCommand}" 
+                                                Height="50" Padding="24,0" materialDesign:ButtonAssist.CornerRadius="16"/>
+                                        <Button Content="EDIT DETAILS" Command="{Binding OpenEditProductDialogCommand}" 
+                                                Style="{StaticResource MaterialDesignOutlinedButton}" Margin="12,0" 
+                                                Height="50" materialDesign:ButtonAssist.CornerRadius="16"/>
+                                        <Button Content="REMOVE" Command="{Binding DeleteProductCommand}" 
+                                                Foreground="#B71C1C" Style="{StaticResource MaterialDesignFlatButton}"
+                                                Height="50"/>
+                                    </StackPanel>
+                                    
+                                    <materialDesign:Card Grid.Row="1" UniformCornerRadius="24" Padding="8" Background="White" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                                        <DataGrid ItemsSource="{Binding ProductsList}" SelectedItem="{Binding SelectedProduct}" 
+                                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+                                                  BorderThickness="0" FontSize="14" GridLinesVisibility="None">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="English Name" Binding="{Binding Name}" Width="*"/>
+                                                <DataGridTextColumn Header="Urdu Name" Binding="{Binding UrduName}" Width="*">
+                                                    <DataGridTextColumn.ElementStyle>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                            <Setter Property="FontSize" Value="16"/>
+                                                            <Setter Property="Foreground" Value="#1A237E"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.ElementStyle>
+                                                </DataGridTextColumn>
+                                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120"/>
+                                                <DataGridTextColumn Header="Retail (Rs)" Binding="{Binding Price, StringFormat='N0'}" Width="100"/>
+                                                <DataGridTextColumn Header="Wholesale (Rs)" Binding="{Binding WholesalePrice, StringFormat='N0'}" Width="110"/>
+                                                <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80">
+                                                    <DataGridTextColumn.CellStyle>
+                                                        <Style TargetType="DataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}">
+                                                            <Setter Property="FontWeight" Value="Black"/>
+                                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                        </Style>
+                                                    </DataGridTextColumn.CellStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </materialDesign:Card>
+                                </Grid>
+                            </TabItem>
+
+                            <!-- Khata & Ledger -->
+                            <TabItem Width="150" Height="80">
+                                <TabItem.Header>
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="BookOpenPageVariant" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="KHATA LEDGER" FontSize="10" FontWeight="Bold" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </TabItem.Header>
+                                <Grid Margin="32">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="400"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Grid Grid.Column="0" Margin="0,0,24,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Button Content="RECEIVE PAYMENT (Rs)" Command="{Binding OpenReceivePaymentDialogCommand}" 
+                                                Height="55" materialDesign:ButtonAssist.CornerRadius="16" Margin="0,0,0,24"
+                                                Background="#2E7D32" BorderBrush="Transparent"/>
+                                        
+                                        <materialDesign:Card Grid.Row="1" UniformCornerRadius="24" Padding="8" Background="White">
+                                            <DataGrid ItemsSource="{Binding CustomersList}" SelectedItem="{Binding SelectedCustomer}" 
+                                                      AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" FontSize="14">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Customer Account" Binding="{Binding Name}" Width="*"/>
+                                                    <DataGridTextColumn Header="Total Debt" Binding="{Binding ArrearsBalance, StringFormat='Rs {0:N0}'}" Width="110">
+                                                        <DataGridTextColumn.ElementStyle>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="FontWeight" Value="Black"/>
+                                                                <Setter Property="Foreground" Value="#B71C1C"/>
+                                                                <Setter Property="TextAlignment" Value="Right"/>
+                                                            </Style>
+                                                        </DataGridTextColumn.ElementStyle>
+                                                    </DataGridTextColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </materialDesign:Card>
+                                    </Grid>
+
+                                    <materialDesign:Card Grid.Column="1" UniformCornerRadius="32" Padding="24" Background="White" materialDesign:ShadowAssist.ShadowDepth="Depth3">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                                                <TextBlock Text="Detailed Transaction History" FontSize="22" FontWeight="Black" Foreground="#1A237E"/>
+                                                <TextBlock Text="{Binding SelectedCustomer.Name, TargetNullValue='Please select a customer to view ledger'}" FontSize="14" Opacity="0.6"/>
+                                            </StackPanel>
+
+                                            <Separator Grid.Row="1" Margin="0,0,0,16" Opacity="0.2"/>
+
+                                            <DataGrid Grid.Row="2" ItemsSource="{Binding CustomerLedger}" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="0" VerticalScrollBarVisibility="Auto">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='dd MMM yy HH:mm'}" Width="130"/>
+                                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                                                    <DataGridTextColumn Header="Udhaar (Dr)" Binding="{Binding Debit, StringFormat='N0'}" Width="90">
+                                                        <DataGridTextColumn.ElementStyle>
+                                                            <Style TargetType="TextBlock"><Setter Property="Foreground" Value="#B71C1C"/><Setter Property="FontWeight" Value="Bold"/></Style>
+                                                        </DataGridTextColumn.ElementStyle>
+                                                    </DataGridTextColumn>
+                                                    <DataGridTextColumn Header="Paid (Cr)" Binding="{Binding Credit, StringFormat='N0'}" Width="90">
+                                                        <DataGridTextColumn.ElementStyle>
+                                                            <Style TargetType="TextBlock"><Setter Property="Foreground" Value="#2E7D32"/><Setter Property="FontWeight" Value="Bold"/></Style>
+                                                        </DataGridTextColumn.ElementStyle>
+                                                    </DataGridTextColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                    <!-- ============ END PREMIUM CONTENT ============ -->
+
+                </materialDesign:DialogHost>
+            </materialDesign:DialogHost>
+        </materialDesign:DialogHost>
+    </materialDesign:DialogHost>
+</UserControl>
